@@ -3,7 +3,7 @@ const form = $("f"), input = $("apex"), btn = $("btn"),
       meta = $("meta"), results = $("results"), toolbar = $("toolbar"),
       filterInput = $("filter"), toast = $("toast");
 
-let current = { apex: "", subdomains: [] };
+let current = { apex: "", subdomains: [], dns: {}, dnsChecked: false };
 
 function showToast(msg) {
   toast.textContent = msg;
@@ -21,7 +21,15 @@ function renderList(items) {
   for (const name of items) {
     const row = document.createElement("div");
     row.className = "row";
-    row.innerHTML = `<span class="name"></span><span class="copy">复制</span>`;
+    const ips = current.dns[name];
+    let badge = "", ipSpan = "";
+    if (current.dnsChecked) {
+      badge = ips
+        ? '<span class="badge alive">存活</span>'
+        : '<span class="badge dead">无解析</span>';
+      if (ips) ipSpan = `<span class="ips">${ips.join(", ")}</span>`;
+    }
+    row.innerHTML = `<span class="name"></span>${badge}${ipSpan}<span class="copy">复制</span>`;
     row.querySelector(".name").textContent = name;
     row.onclick = () => {
       navigator.clipboard?.writeText(name);
@@ -70,18 +78,23 @@ filterInput.oninput = () => {
 
 async function search(apex) {
   btn.disabled = true;
-  meta.textContent = "正在查询 CT 日志…";
+  const dnsChecked = $("dnsCheck").checked;
+  meta.textContent = dnsChecked ? "正在查询 CT 日志并验证 DNS…" : "正在查询 CT 日志…";
   toolbar.style.display = "none";
   results.innerHTML = '<div class="empty">Loading…</div>';
   try {
-    const r = await fetch(`/api/v1/search?apex=${encodeURIComponent(apex)}`);
+    const r = await fetch(`/api/v1/search?apex=${encodeURIComponent(apex)}&dns_check=${dnsChecked}`);
     const data = await r.json();
     if (!r.ok) throw new Error(data.error || r.statusText);
-    current = { apex, subdomains: data.subdomains };
+    const dnsMap = {};
+    if (data.dns?.alive) for (const [s, ips] of Object.entries(data.dns.alive)) dnsMap[s] = ips;
+    current = { apex, subdomains: data.subdomains, dns: dnsMap, dnsChecked };
     const parts = [`共 ${data.count} 个子域名`];
+    if (dnsChecked && data.dns) parts.push(`<span class="alive">存活 ${data.dns.alive_count}</span>`);
     if (data.cached) parts.push("缓存命中 ✓");
     if (data.elapsed_seconds != null) parts.push(`耗时 ${data.elapsed_seconds}s`);
-    meta.textContent = parts.join("  ·  ");
+    if (data.dns?.elapsed_seconds != null) parts.push(`DNS ${data.dns.elapsed_seconds}s`);
+    meta.innerHTML = parts.join("  ·  ");
     toolbar.style.display = "flex";
     filterInput.value = "";
     renderList(data.subdomains);

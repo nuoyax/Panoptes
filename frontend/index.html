@@ -56,6 +56,18 @@
       transition: all .15s; display: inline-flex; align-items: center; gap: 5px;
     }
     .chip:hover { border-color: var(--accent); color: var(--accent); }
+    #dnsToggle {
+      display: flex; align-items: center; gap: 6px; font-size: .85rem;
+      color: var(--muted); cursor: pointer; padding: 0 8px; user-select: none;
+    }
+    #dnsToggle input { accent-color: var(--accent); cursor: pointer; }
+    #meta .alive { color: var(--accent2); }
+    .row .ips { color: #55627a; font-size: .75rem; margin-left: 12px; }
+    .row .badge {
+      font-size: .7rem; padding: 2px 8px; border-radius: 20px; margin-left: 12px;
+    }
+    .badge.alive { background: rgba(126,224,184,.12); color: var(--accent2); }
+    .badge.dead { background: rgba(248,113,113,.1); color: #f87171; }
     .filter {
       background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
       color: var(--text); padding: 6px 12px; font-size: .82rem; outline: none; width: 180px;
@@ -92,6 +104,9 @@
 
   <form id="f">
     <input id="apex" type="text" placeholder="example.com" autocomplete="off" autofocus spellcheck="false">
+    <label id="dnsToggle" title="并发解析 A 记录，标记真实存活的子域名">
+      <input type="checkbox" id="dnsCheck" checked> DNS 验证
+    </label>
     <button id="btn" class="primary" type="submit">查询</button>
   </form>
 

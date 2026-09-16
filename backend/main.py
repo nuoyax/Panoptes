@@ -7,7 +7,7 @@ from fastapi import FastAPI, Query
 from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 
-from . import config, aggregator
+from . import config, aggregator, dns_verify
 from .cache import Cache
 
 APEX_PATTERN = re.compile(config.APEX_RE)
@@ -31,6 +31,7 @@ async def search(
     apex: str = Query(..., description="Apex domain, e.g. baidu.com"),
     format: str = Query("json", pattern="^(json|text)$"),
     refresh: bool = Query(False, description="Bypass cache"),
+    dns_check: bool = Query(False, description="Resolve A records for each subdomain"),
 ):
     apex = apex.strip().lower()
     if not APEX_PATTERN.match(apex):
@@ -59,6 +60,13 @@ async def search(
     if format == "text":
         return PlainTextResponse("\n".join(subdomains) + ("\n" if subdomains else ""))
 
+    dns_summary = None
+    if dns_check and subdomains:
+        t1 = time.perf_counter()
+        results = await dns_verify.verify(subdomains)
+        dns_summary = dns_verify.summarize(results)
+        dns_summary["elapsed_seconds"] = round(time.perf_counter() - t1, 2)
+
     return {
         "apex": apex,
         "count": len(subdomains),
@@ -66,6 +74,7 @@ async def search(
         "fetched_at": fetched_at,
         **meta,
         "subdomains": subdomains,
+        "dns": dns_summary,
     }
 
 
