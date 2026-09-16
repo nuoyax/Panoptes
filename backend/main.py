@@ -7,7 +7,7 @@ from fastapi import FastAPI, Query
 from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 
-from . import config, aggregator, dns_verify, http_probe, port_scan
+from . import config, aggregator, dns_verify, http_probe, port_scan, recon
 from .cache import Cache
 
 APEX_PATTERN = re.compile(config.APEX_RE)
@@ -34,6 +34,7 @@ async def search(
     dns_check: bool = Query(False, description="Resolve A records for each subdomain"),
     http_check: bool = Query(False, description="Probe HTTP status and page title"),
     port_check: bool = Query(False, description="TCP port scan on DNS-resolved hosts"),
+    sec_check: bool = Query(False, description="Sensitive paths, security headers, TLS cert checks"),
 ):
     apex = apex.strip().lower()
     if not APEX_PATTERN.match(apex):
@@ -86,6 +87,12 @@ async def search(
         port_summary = await port_scan.scan(dns_summary["alive"])
         port_summary["elapsed_seconds"] = round(time.perf_counter() - t3, 2)
 
+    sec_summary = None
+    if sec_check and http_summary:
+        t4 = time.perf_counter()
+        sec_summary = await recon.recon(http_summary["results"])
+        sec_summary["elapsed_seconds"] = round(time.perf_counter() - t4, 2)
+
     return {
         "apex": apex,
         "count": len(subdomains),
@@ -96,6 +103,7 @@ async def search(
         "dns": dns_summary,
         "http": http_summary,
         "ports": port_summary,
+        "security": sec_summary,
     }
 
 

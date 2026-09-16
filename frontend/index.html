@@ -95,6 +95,16 @@
       font-size: .75rem; padding: 1px 7px; margin: 1px; border-radius: 6px;
       background: rgba(79,156,249,.1); color: var(--accent);
     }
+    .path {
+      display: inline-block; font-family: ui-monospace, Consolas, monospace;
+      font-size: .74rem; padding: 1px 7px; margin: 1px; border-radius: 6px;
+      background: rgba(248,113,113,.1); color: #f87171;
+    }
+    .secval { font-size: .74rem; color: var(--muted); display: block; max-width: 260px; overflow-wrap: anywhere; }
+    .sec-ok { color: var(--accent2); font-size: .78rem; }
+    .sec-miss { color: #f87171; font-size: .74rem; display: block; max-width: 220px; overflow-wrap: anywhere; }
+    .tls-ok { color: var(--accent2); font-size: .78rem; }
+    .tls-warn { color: #fbbf24; font-size: .78rem; }
     .empty { color: var(--muted); padding: 28px; text-align: center; cursor: default; }
     .err { color: #f87171; }
     .toast {
@@ -121,6 +131,9 @@
     </label>
     <label class="toggle" title="对 DNS 存活主机进行常见端口 TCP 扫描">
       <input type="checkbox" id="portCheck"> 端口扫描
+    </label>
+    <label class="toggle" title="敏感路径暴露 / 安全响应头缺失 / TLS 证书检查">
+      <input type="checkbox" id="secCheck"> 安全检查
     </label>
     <button id="btn" class="primary" type="submit">查询</button>
   </form>
