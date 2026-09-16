@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subdomain Query · 子域名查询</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; background: #0d1117; color: #c9d1d9;
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Courier New", monospace;
+      display: flex; flex-direction: column; align-items: center; padding: 48px 16px;
+    }
+    h1 { color: #e6edf3; font-size: 1.6rem; margin: 0 0 4px; }
+    .sub { color: #8b949e; font-size: .85rem; margin-bottom: 28px; }
+    form { display: flex; width: 100%; max-width: 560px; gap: 8px; }
+    input {
+      flex: 1; background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+      color: #e6edf3; padding: 12px 14px; font-size: 1rem; outline: none;
+    }
+    input:focus { border-color: #58a6ff; }
+    button {
+      background: #238636; color: #fff; border: none; border-radius: 8px;
+      padding: 12px 20px; font-size: 1rem; cursor: pointer;
+    }
+    button:disabled { opacity: .5; cursor: wait; }
+    #meta { width: 100%; max-width: 900px; color: #8b949e; font-size: .8rem;
+            margin: 20px 0 8px; min-height: 1.2em; }
+    #results {
+      width: 100%; max-width: 900px; background: #161b22; border: 1px solid #30363d;
+      border-radius: 8px; overflow: hidden auto; max-height: 65vh;
+    }
+    #results div { padding: 7px 14px; border-bottom: 1px solid #21262d;
+                   overflow-wrap: anywhere; cursor: pointer; }
+    #results div:hover { background: #1c2129; color: #58a6ff; }
+    #results div:last-child { border-bottom: none; }
+    .empty { color: #8b949e; padding: 20px !important; text-align: center; cursor: default !important; }
+    .err { color: #f85149; }
+  </style>
+</head>
+<body>
+  <h1>🔍 Subdomain Query</h1>
+  <div class="sub">Certificate Transparency log aggregation · self-hosted</div>
+  <form id="f">
+    <input id="apex" type="text" placeholder="example.com" autocomplete="off" autofocus>
+    <button id="btn" type="submit">Search</button>
+  </form>
+  <div id="meta"></div>
+  <div id="results"><div class="empty">输入 apex 域名开始查询，例如 baidu.com</div></div>
+  <script src="app.js"></script>
+</body>
+</html>
