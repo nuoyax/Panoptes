@@ -2,6 +2,7 @@
 
 import json
 
+from .. import config
 from .base import CTSource
 
 
@@ -11,6 +12,8 @@ class CrtShSource(CTSource):
     async def query(self, client, apex: str) -> list[str]:
         url = "https://crt.sh/"
         params = {"q": f"%.{apex}", "output": "json"}
+        if config.CRTSH_EXCLUDE_EXPIRED:
+            params["exclude"] = "expired"
         resp = await client.get(url, params=params)
         resp.raise_for_status()
         data = json.loads(resp.text)

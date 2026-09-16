@@ -10,8 +10,11 @@ DATA_DIR.mkdir(exist_ok=True)
 DB_PATH = DATA_DIR / "cache.db"
 
 # Upstream HTTP settings
-UPSTREAM_TIMEOUT = 30.0  # seconds per CT source
-USER_AGENT = "subdomain-query/1.0 (+self-hosted CT aggregator)"
+UPSTREAM_TIMEOUT = 120.0  # seconds per CT source (crt.sh can be slow)
+USER_AGENT = "Mozilla/5.0"
+
+# crt.sh query tuning: excluding expired certs is 10-20x faster upstream
+CRTSH_EXCLUDE_EXPIRED = True
 
 # Cache settings
 CACHE_TTL_SECONDS = 24 * 3600  # 24h
