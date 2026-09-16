@@ -5,49 +5,105 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subdomain Query · 子域名查询</title>
   <style>
-    :root { color-scheme: dark; }
+    :root {
+      color-scheme: dark;
+      --bg: #0a0e14; --panel: #111823; --border: #1f2a3a;
+      --text: #dbe4f0; --muted: #7d8ba1; --accent: #4f9cf9; --accent2: #7ee0b8;
+    }
     * { box-sizing: border-box; }
     body {
-      margin: 0; min-height: 100vh; background: #0d1117; color: #c9d1d9;
-      font-family: ui-monospace, SFMono-Regular, Consolas, "Courier New", monospace;
-      display: flex; flex-direction: column; align-items: center; padding: 48px 16px;
+      margin: 0; min-height: 100vh; background:
+        radial-gradient(1200px 600px at 50% -10%, #14213a 0%, var(--bg) 55%);
+      color: var(--text);
+      font-family: "Segoe UI", system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+      display: flex; flex-direction: column; align-items: center; padding: 56px 16px 40px;
     }
-    h1 { color: #e6edf3; font-size: 1.6rem; margin: 0 0 4px; }
-    .sub { color: #8b949e; font-size: .85rem; margin-bottom: 28px; }
-    form { display: flex; width: 100%; max-width: 560px; gap: 8px; }
+    .logo {
+      width: 52px; height: 52px; border-radius: 14px; margin-bottom: 14px;
+      background: linear-gradient(135deg, var(--accent), #2b5db8);
+      display: flex; align-items: center; justify-content: center; font-size: 26px;
+      box-shadow: 0 8px 24px rgba(79,156,249,.25);
+    }
+    h1 { margin: 0; font-size: 1.7rem; font-weight: 600; letter-spacing: .3px; }
+    h1 span { color: var(--accent); }
+    .sub { color: var(--muted); font-size: .88rem; margin: 8px 0 30px; }
+    form {
+      display: flex; width: 100%; max-width: 620px; gap: 10px;
+      background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+      padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
     input {
-      flex: 1; background: #161b22; border: 1px solid #30363d; border-radius: 8px;
-      color: #e6edf3; padding: 12px 14px; font-size: 1rem; outline: none;
+      flex: 1; background: transparent; border: none; color: var(--text);
+      font-size: 1.05rem; padding: 10px 12px; outline: none; min-width: 0;
+      font-family: ui-monospace, Consolas, monospace;
     }
-    input:focus { border-color: #58a6ff; }
-    button {
-      background: #238636; color: #fff; border: none; border-radius: 8px;
-      padding: 12px 20px; font-size: 1rem; cursor: pointer;
+    input::placeholder { color: #55627a; }
+    button.primary {
+      background: linear-gradient(135deg, var(--accent), #3b7fd9); color: #fff;
+      border: none; border-radius: 10px; padding: 10px 24px; font-size: .95rem;
+      font-weight: 600; cursor: pointer; transition: filter .15s;
     }
+    button.primary:hover { filter: brightness(1.1); }
     button:disabled { opacity: .5; cursor: wait; }
-    #meta { width: 100%; max-width: 900px; color: #8b949e; font-size: .8rem;
-            margin: 20px 0 8px; min-height: 1.2em; }
-    #results {
-      width: 100%; max-width: 900px; background: #161b22; border: 1px solid #30363d;
-      border-radius: 8px; overflow: hidden auto; max-height: 65vh;
+    #toolbar {
+      width: 100%; max-width: 960px; display: none; align-items: center;
+      gap: 8px; margin: 22px 0 10px; flex-wrap: wrap;
     }
-    #results div { padding: 7px 14px; border-bottom: 1px solid #21262d;
-                   overflow-wrap: anywhere; cursor: pointer; }
-    #results div:hover { background: #1c2129; color: #58a6ff; }
-    #results div:last-child { border-bottom: none; }
-    .empty { color: #8b949e; padding: 20px !important; text-align: center; cursor: default !important; }
-    .err { color: #f85149; }
+    #meta { color: var(--muted); font-size: .84rem; margin-right: auto; }
+    .chip {
+      background: var(--panel); border: 1px solid var(--border); color: var(--text);
+      border-radius: 8px; padding: 6px 14px; font-size: .82rem; cursor: pointer;
+      transition: all .15s; display: inline-flex; align-items: center; gap: 5px;
+    }
+    .chip:hover { border-color: var(--accent); color: var(--accent); }
+    .filter {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); padding: 6px 12px; font-size: .82rem; outline: none; width: 180px;
+    }
+    #results {
+      width: 100%; max-width: 960px; background: var(--panel);
+      border: 1px solid var(--border); border-radius: 14px;
+      overflow: hidden auto; max-height: 62vh; box-shadow: 0 10px 30px rgba(0,0,0,.3);
+    }
+    .row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 16px; border-bottom: 1px solid #182230; cursor: pointer;
+      font-family: ui-monospace, Consolas, monospace; font-size: .92rem;
+    }
+    .row:hover { background: #16202e; }
+    .row .name { overflow-wrap: anywhere; }
+    .row .copy { color: #55627a; font-size: .75rem; opacity: 0; transition: opacity .15s; }
+    .row:hover .copy { opacity: 1; color: var(--accent); }
+    .empty { color: var(--muted); padding: 28px; text-align: center; cursor: default; }
+    .err { color: #f87171; }
+    .toast {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+      background: var(--accent2); color: #06281c; padding: 9px 20px; border-radius: 10px;
+      font-size: .88rem; font-weight: 600; opacity: 0; pointer-events: none;
+      transition: opacity .25s; box-shadow: 0 8px 24px rgba(0,0,0,.4);
+    }
+    .toast.show { opacity: 1; }
   </style>
 </head>
 <body>
-  <h1>🔍 Subdomain Query</h1>
-  <div class="sub">Certificate Transparency log aggregation · self-hosted</div>
+  <div class="logo">🔍</div>
+  <h1>Subdomain <span>Query</span></h1>
+  <div class="sub">Certificate Transparency 日志聚合 · 自托管子域名查询</div>
+
   <form id="f">
-    <input id="apex" type="text" placeholder="example.com" autocomplete="off" autofocus>
-    <button id="btn" type="submit">Search</button>
+    <input id="apex" type="text" placeholder="example.com" autocomplete="off" autofocus spellcheck="false">
+    <button id="btn" class="primary" type="submit">查询</button>
   </form>
-  <div id="meta"></div>
+
+  <div id="toolbar">
+    <span id="meta"></span>
+    <input id="filter" class="filter" type="text" placeholder="过滤结果…">
+    <button class="chip" data-fmt="txt">📄 TXT</button>
+    <button class="chip" data-fmt="csv">📊 CSV</button>
+    <button class="chip" data-fmt="json">{ } JSON</button>
+  </div>
   <div id="results"><div class="empty">输入 apex 域名开始查询，例如 baidu.com</div></div>
+  <div class="toast" id="toast"></div>
   <script src="app.js"></script>
 </body>
 </html>
