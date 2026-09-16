@@ -7,7 +7,7 @@ from fastapi import FastAPI, Query
 from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 
-from . import config, aggregator, dns_verify
+from . import config, aggregator, dns_verify, http_probe
 from .cache import Cache
 
 APEX_PATTERN = re.compile(config.APEX_RE)
@@ -32,6 +32,7 @@ async def search(
     format: str = Query("json", pattern="^(json|text)$"),
     refresh: bool = Query(False, description="Bypass cache"),
     dns_check: bool = Query(False, description="Resolve A records for each subdomain"),
+    http_check: bool = Query(False, description="Probe HTTP status and page title"),
 ):
     apex = apex.strip().lower()
     if not APEX_PATTERN.match(apex):
@@ -67,6 +68,17 @@ async def search(
         dns_summary = dns_verify.summarize(results)
         dns_summary["elapsed_seconds"] = round(time.perf_counter() - t1, 2)
 
+    http_summary = None
+    if http_check and subdomains:
+        t2 = time.perf_counter()
+        targets = dns_summary["alive"].keys() if dns_summary else subdomains
+        http_results = await http_probe.probe(list(targets))
+        http_summary = {
+            "results": http_results,
+            "web_count": sum(1 for v in http_results.values() if v),
+            "elapsed_seconds": round(time.perf_counter() - t2, 2),
+        }
+
     return {
         "apex": apex,
         "count": len(subdomains),
@@ -75,6 +87,7 @@ async def search(
         **meta,
         "subdomains": subdomains,
         "dns": dns_summary,
+        "http": http_summary,
     }
 
 

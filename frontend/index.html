@@ -28,11 +28,11 @@
     h1 span { color: var(--accent); }
     .sub { color: var(--muted); font-size: .88rem; margin: 8px 0 30px; }
     form {
-      display: flex; width: 100%; max-width: 620px; gap: 10px;
+      display: flex; width: 100%; max-width: 720px; gap: 10px; align-items: center;
       background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
       padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.35);
     }
-    input {
+    input[type=text] {
       flex: 1; background: transparent; border: none; color: var(--text);
       font-size: 1.05rem; padding: 10px 12px; outline: none; min-width: 0;
       font-family: ui-monospace, Consolas, monospace;
@@ -45,54 +45,58 @@
     }
     button.primary:hover { filter: brightness(1.1); }
     button:disabled { opacity: .5; cursor: wait; }
+    .toggle {
+      display: flex; align-items: center; gap: 6px; font-size: .85rem;
+      color: var(--muted); cursor: pointer; padding: 0 8px; user-select: none; white-space: nowrap;
+    }
+    .toggle input { accent-color: var(--accent); cursor: pointer; flex: none; }
     #toolbar {
-      width: 100%; max-width: 960px; display: none; align-items: center;
+      width: 100%; max-width: 1100px; display: none; align-items: center;
       gap: 8px; margin: 22px 0 10px; flex-wrap: wrap;
     }
     #meta { color: var(--muted); font-size: .84rem; margin-right: auto; }
+    #meta .alive { color: var(--accent2); }
     .chip {
       background: var(--panel); border: 1px solid var(--border); color: var(--text);
       border-radius: 8px; padding: 6px 14px; font-size: .82rem; cursor: pointer;
       transition: all .15s; display: inline-flex; align-items: center; gap: 5px;
     }
     .chip:hover { border-color: var(--accent); color: var(--accent); }
-    #dnsToggle {
-      display: flex; align-items: center; gap: 6px; font-size: .85rem;
-      color: var(--muted); cursor: pointer; padding: 0 8px; user-select: none;
-    }
-    #dnsToggle input { accent-color: var(--accent); cursor: pointer; }
-    #meta .alive { color: var(--accent2); }
-    .row .ips { color: #55627a; font-size: .75rem; margin-left: 12px; }
-    .row .badge {
-      font-size: .7rem; padding: 2px 8px; border-radius: 20px; margin-left: 12px;
-    }
-    .badge.alive { background: rgba(126,224,184,.12); color: var(--accent2); }
-    .badge.dead { background: rgba(248,113,113,.1); color: #f87171; }
     .filter {
       background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
       color: var(--text); padding: 6px 12px; font-size: .82rem; outline: none; width: 180px;
     }
+    .filter::placeholder { color: #55627a; }
     #results {
-      width: 100%; max-width: 960px; background: var(--panel);
+      width: 100%; max-width: 1100px; background: var(--panel);
       border: 1px solid var(--border); border-radius: 14px;
-      overflow: hidden auto; max-height: 62vh; box-shadow: 0 10px 30px rgba(0,0,0,.3);
+      overflow: auto; max-height: 62vh; box-shadow: 0 10px 30px rgba(0,0,0,.3);
     }
-    .row {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 9px 16px; border-bottom: 1px solid #182230; cursor: pointer;
-      font-family: ui-monospace, Consolas, monospace; font-size: .92rem;
+    table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+    thead th {
+      position: sticky; top: 0; background: #16202e; color: var(--muted);
+      text-align: left; padding: 10px 14px; font-weight: 600; font-size: .78rem;
+      border-bottom: 1px solid var(--border); white-space: nowrap; z-index: 1;
     }
-    .row:hover { background: #16202e; }
-    .row .name { overflow-wrap: anywhere; }
-    .row .copy { color: #55627a; font-size: .75rem; opacity: 0; transition: opacity .15s; }
-    .row:hover .copy { opacity: 1; color: var(--accent); }
+    tbody td { padding: 8px 14px; border-bottom: 1px solid #182230; vertical-align: top; }
+    tbody tr { cursor: pointer; }
+    tbody tr:hover { background: #16202e; }
+    td.sub { font-family: ui-monospace, Consolas, monospace; overflow-wrap: anywhere; color: var(--text); }
+    td.ips { font-family: ui-monospace, Consolas, monospace; color: #55627a; font-size: .78rem; overflow-wrap: anywhere; }
+    td.status { white-space: nowrap; font-family: ui-monospace, Consolas, monospace; }
+    td.title { color: var(--muted); max-width: 320px; overflow-wrap: anywhere; }
+    .st-2 { color: var(--accent2); } .st-3 { color: var(--accent); }
+    .st-4, .st-5 { color: #f87171; }
+    .badge { font-size: .7rem; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+    .badge.alive { background: rgba(126,224,184,.12); color: var(--accent2); }
+    .badge.dead { background: rgba(248,113,113,.1); color: #f87171; }
     .empty { color: var(--muted); padding: 28px; text-align: center; cursor: default; }
     .err { color: #f87171; }
     .toast {
       position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
       background: var(--accent2); color: #06281c; padding: 9px 20px; border-radius: 10px;
       font-size: .88rem; font-weight: 600; opacity: 0; pointer-events: none;
-      transition: opacity .25s; box-shadow: 0 8px 24px rgba(0,0,0,.4);
+      transition: opacity .25s; box-shadow: 0 8px 24px rgba(0,0,0,.4); z-index: 10;
     }
     .toast.show { opacity: 1; }
   </style>
@@ -104,8 +108,11 @@
 
   <form id="f">
     <input id="apex" type="text" placeholder="example.com" autocomplete="off" autofocus spellcheck="false">
-    <label id="dnsToggle" title="并发解析 A 记录，标记真实存活的子域名">
+    <label class="toggle" title="并发解析 A 记录，标记真实存活的子域名">
       <input type="checkbox" id="dnsCheck" checked> DNS 验证
+    </label>
+    <label class="toggle" title="探测存活域名的 HTTP 状态码与网页标题">
+      <input type="checkbox" id="httpCheck" checked> HTTP 探测
     </label>
     <button id="btn" class="primary" type="submit">查询</button>
   </form>
