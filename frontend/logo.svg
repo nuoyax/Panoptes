@@ -1,57 +1,72 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!--
+    Argus Panoptes in ancient Greek black-figure pottery style.
+    Terracotta ground, black silhouette figure, incised details —
+    like an amphora scene, with a Greek key (meander) border.
+  -->
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#4f9cf9"/>
-      <stop offset="1" stop-color="#2b5db8"/>
+    <linearGradient id="clay" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d98e4a"/>
+      <stop offset="1" stop-color="#c1702f"/>
     </linearGradient>
   </defs>
 
-  <!-- badge -->
-  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#bg)"/>
+  <!-- terracotta background -->
+  <rect x="2" y="2" width="60" height="60" rx="10" fill="url(#clay)"/>
 
-  <!--
-    Abstract Argus: the "all-seeing" reduced to geometry.
-    One triangle = the mythical watchman; each vertex holds an eye.
-    Edges = the gaze lines connecting his hundred eyes — nothing escapes
-    the network of sight. Reads as both a face (two eyes + brow) and a
-    constellation / network graph (subdomains discovered and linked).
-  -->
-
-  <!-- gaze lines between the eyes -->
-  <g stroke="#bcd9ff" stroke-width="1.6" opacity="0.55" stroke-linecap="round">
-    <line x1="20" y1="22" x2="44" y2="22"/>
-    <line x1="20" y1="22" x2="32" y2="42"/>
-    <line x1="44" y1="22" x2="32" y2="42"/>
+  <!-- meander (Greek key) border, top and bottom -->
+  <g fill="none" stroke="#2b1608" stroke-width="1.6">
+    <path d="M8 9 h6 v-3 h4 v3 h4 v-3 h4 v3 h4 v-3 h4 v3 h4 v-3 h4 v3 h4 v-3 h4 v6"
+          opacity="0.85" transform="translate(0,1)"/>
+    <path d="M8 55 h6 v3 h4 v-3 h4 v3 h4 v-3 h4 v3 h4 v-3 h4 v3 h4 v-3 h4 v3 h4 v-6"
+          opacity="0.85" transform="translate(0,-1)"/>
   </g>
 
-  <!-- triangle outline: the Panoptes figure -->
-  <path d="M32 12 L52 46 L12 46 Z" fill="none" stroke="#dbeaff"
-        stroke-width="2.6" stroke-linejoin="round" opacity="0.9"/>
+  <!-- Argus: black-figure silhouette, kneeling/walking pose with spear -->
+  <g fill="#241105">
+    <!-- head with curly hair (incised circles knocked out in clay color) -->
+    <circle cx="27" cy="17" r="4.6"/>
+    <circle cx="25.4" cy="15.4" r="1.1" fill="url(#clay)"/>
+    <circle cx="28.6" cy="15.4" r="1.1" fill="url(#clay)"/>
+    <circle cx="27" cy="18.6" r="1.1" fill="url(#clay)"/>
+    <!-- nose profile -->
+    <path d="M31 16.5 l3 2 l-2.6 1.4 z"/>
+    <!-- torso -->
+    <path d="M22 23 Q27 21 32 23 L34 36 Q28 39 21 36 Z"/>
+    <!-- arm raised holding spear -->
+    <path d="M31 24 L40 19 L41 21.5 L33 27 Z"/>
+    <!-- legs in walking stance -->
+    <path d="M22 36 L20 48 L23.6 48 L25.6 38 Z"/>
+    <path d="M29 37 L33 47 L36.6 47 L33 36.5 Z"/>
+    <!-- feet -->
+    <path d="M17.5 48 L24 48 L24 50.4 L17 50.4 Z"/>
+    <path d="M32 47 L38.5 47 L39.5 49.4 L32.5 49.4 Z"/>
+  </g>
 
-  <!-- vertex eyes -->
-  <!-- top vertex: the primary eye -->
-  <g>
-    <circle cx="32" cy="12" r="6.5" fill="#0a1440"/>
-    <circle cx="32" cy="12" r="4.2" fill="#eaf4ff"/>
-    <circle cx="32" cy="12" r="2" fill="#0a1440"/>
-    <circle cx="33" cy="11" r="0.8" fill="#fff"/>
+  <!-- spear -->
+  <line x1="41.5" y1="9" x2="38.5" y2="24" stroke="#241105" stroke-width="1.8"/>
+  <path d="M41.5 9 l2.2 -3.2 l0.6 3.8 z" fill="#241105"/>
+
+  <!-- the many eyes incised on the body (black-figure incision technique) -->
+  <g fill="none" stroke="url(#clay)" stroke-width="1.3">
+    <!-- chest -->
+    <ellipse cx="27.5" cy="28" rx="2.1" ry="1.6"/>
+    <circle cx="27.5" cy="28" r="0.6" fill="url(#clay)"/>
+    <ellipse cx="25" cy="33" rx="1.7" ry="1.3"/>
+    <circle cx="25" cy="33" r="0.5" fill="url(#clay)"/>
+    <ellipse cx="30.5" cy="33" rx="1.7" ry="1.3"/>
+    <circle cx="30.5" cy="33" r="0.5" fill="url(#clay)"/>
+    <!-- legs -->
+    <ellipse cx="22.6" cy="42" rx="1.5" ry="1.1"/>
+    <ellipse cx="32.6" cy="42" rx="1.5" ry="1.1"/>
+    <!-- arm -->
+    <ellipse cx="36" cy="22.5" rx="1.4" ry="1.1"/>
   </g>
-  <!-- left vertex eye -->
-  <g>
-    <circle cx="12" cy="46" r="5" fill="#0a1440"/>
-    <circle cx="12" cy="46" r="3" fill="#eaf4ff"/>
-    <circle cx="12" cy="46" r="1.4" fill="#0a1440"/>
-  </g>
-  <!-- right vertex eye -->
-  <g>
-    <circle cx="52" cy="46" r="5" fill="#0a1440"/>
-    <circle cx="52" cy="46" r="3" fill="#eaf4ff"/>
-    <circle cx="52" cy="46" r="1.4" fill="#0a1440"/>
-  </g>
-  <!-- centroid eye: the ever-open inner gaze -->
-  <g>
-    <circle cx="32" cy="35" r="4" fill="#0a1440"/>
-    <circle cx="32" cy="35" r="2.4" fill="#8fd0ff"/>
-    <circle cx="32" cy="35" r="1.1" fill="#0a1440"/>
-  </g>
+
+  <!-- shield at his side bearing an eye (apotropaic device, historically real) -->
+  <circle cx="46" cy="38" r="7.5" fill="#241105"/>
+  <circle cx="46" cy="38" r="5.6" fill="none" stroke="url(#clay)" stroke-width="1"/>
+  <ellipse cx="46" cy="38" rx="3.4" ry="2.6" fill="url(#clay)"/>
+  <circle cx="46" cy="38" r="1.5" fill="#241105"/>
+  <circle cx="46.8" cy="37.2" r="0.6" fill="url(#clay)"/>
 </svg>
