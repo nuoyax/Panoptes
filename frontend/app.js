@@ -3,7 +3,7 @@ const form = $("f"), input = $("apex"), btn = $("btn"),
       meta = $("meta"), results = $("results"), toolbar = $("toolbar"),
       filterInput = $("filter"), toast = $("toast");
 
-let current = { apex: "", subdomains: [], dns: {}, dnsChecked: false, http: {}, httpChecked: false };
+let current = { apex: "", subdomains: [], dns: {}, dnsChecked: false, http: {}, httpChecked: false, ports: {}, portChecked: false };
 
 function showToast(msg) {
   toast.textContent = msg;
@@ -24,15 +24,17 @@ function renderList(items) {
     results.innerHTML = '<div class="empty">没有匹配的子域名</div>';
     return;
   }
-  const showDns = current.dnsChecked, showHttp = current.httpChecked;
+  const showDns = current.dnsChecked, showHttp = current.httpChecked, showPorts = current.portChecked;
   let html = `<table><thead><tr>
     <th style="width:34%">子域名</th>
     ${showDns ? "<th>状态</th><th style=\"width:24%\">IP (A 记录)</th>" : ""}
     ${showHttp ? "<th style=\"width:8%\">HTTP</th><th>标题</th>" : ""}
+    ${showPorts ? "<th>开放端口</th>" : ""}
   </tr></thead><tbody>`;
   for (const name of items) {
     const ips = current.dns[name];
     const info = current.http[name];
+    const ports = current.ports[name];
     html += `<tr data-name="${esc(name)}" title="点击复制 ${esc(name)}">`;
     html += `<td class="sub">${esc(name)}</td>`;
     if (showDns) {
@@ -44,6 +46,11 @@ function renderList(items) {
       html += info
         ? `<td class="status"><span class="${statusClass(info.status)}">${info.status}</span></td><td class="title">${info.title ? esc(info.title) : "—"}</td>`
         : `<td class="status">—</td><td class="title">—</td>`;
+    }
+    if (showPorts) {
+      html += ports
+        ? `<td class="ips">${Object.keys(ports).map(p => `<span class="port">${esc(p)}</span>`).join(" ")}</td>`
+        : `<td class="ips">—</td>`;
     }
     html += `</tr>`;
   }
@@ -111,24 +118,28 @@ async function search(apex) {
   btn.disabled = true;
   const dnsChecked = $("dnsCheck").checked;
   const httpChecked = $("httpCheck").checked;
+  const portChecked = $("portCheck").checked;
   meta.textContent = "正在查询 CT 日志…";
   toolbar.style.display = "none";
   results.innerHTML = '<div class="empty">Loading…</div>';
   try {
-    const r = await fetch(`/api/v1/search?apex=${encodeURIComponent(apex)}&dns_check=${dnsChecked}&http_check=${httpChecked}`);
+    const r = await fetch(`/api/v1/search?apex=${encodeURIComponent(apex)}&dns_check=${dnsChecked}&http_check=${httpChecked}&port_check=${portChecked}`);
     const data = await r.json();
     if (!r.ok) throw new Error(data.error || r.statusText);
-    const dnsMap = {}, httpMap = {};
+    const dnsMap = {}, httpMap = {}, portMap = {};
     if (data.dns?.alive) for (const [s, ips] of Object.entries(data.dns.alive)) dnsMap[s] = ips;
     if (data.http?.results) for (const [s, info] of Object.entries(data.http.results)) { if (info) httpMap[s] = info; }
-    current = { apex, subdomains: data.subdomains, dns: dnsMap, dnsChecked, http: httpMap, httpChecked };
+    if (data.ports?.results) Object.assign(portMap, data.ports.results);
+    current = { apex, subdomains: data.subdomains, dns: dnsMap, dnsChecked, http: httpMap, httpChecked, ports: portMap, portChecked };
     const parts = [`共 ${data.count} 个子域名`];
     if (dnsChecked && data.dns) parts.push(`<span class="alive">存活 ${data.dns.alive_count}</span>`);
     if (httpChecked && data.http) parts.push(`Web 服务 ${data.http.web_count}`);
+    if (portChecked && data.ports) parts.push(`开放端口主机 ${data.ports.hosts_with_open}`);
     if (data.cached) parts.push("缓存命中 ✓");
     if (data.elapsed_seconds != null) parts.push(`耗时 ${data.elapsed_seconds}s`);
     if (data.dns?.elapsed_seconds != null) parts.push(`DNS ${data.dns.elapsed_seconds}s`);
     if (data.http?.elapsed_seconds != null) parts.push(`HTTP ${data.http.elapsed_seconds}s`);
+    if (data.ports?.elapsed_seconds != null) parts.push(`端口 ${data.ports.elapsed_seconds}s`);
     meta.innerHTML = parts.join("  ·  ");
     toolbar.style.display = "flex";
     filterInput.value = "";

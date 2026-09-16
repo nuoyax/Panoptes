@@ -90,6 +90,11 @@
     .badge { font-size: .7rem; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
     .badge.alive { background: rgba(126,224,184,.12); color: var(--accent2); }
     .badge.dead { background: rgba(248,113,113,.1); color: #f87171; }
+    .port {
+      display: inline-block; font-family: ui-monospace, Consolas, monospace;
+      font-size: .75rem; padding: 1px 7px; margin: 1px; border-radius: 6px;
+      background: rgba(79,156,249,.1); color: var(--accent);
+    }
     .empty { color: var(--muted); padding: 28px; text-align: center; cursor: default; }
     .err { color: #f87171; }
     .toast {
@@ -113,6 +118,9 @@
     </label>
     <label class="toggle" title="探测存活域名的 HTTP 状态码与网页标题">
       <input type="checkbox" id="httpCheck" checked> HTTP 探测
+    </label>
+    <label class="toggle" title="对 DNS 存活主机进行常见端口 TCP 扫描">
+      <input type="checkbox" id="portCheck"> 端口扫描
     </label>
     <button id="btn" class="primary" type="submit">查询</button>
   </form>
