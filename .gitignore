@@ -1,0 +1,11 @@
+.claude/
+CLAUDE.md
+.mcp.json
+.claudeignore
+__pycache__/
+*.pyc
+data/
+.venv/
+venv/
+node_modules/
+.DS_Store
