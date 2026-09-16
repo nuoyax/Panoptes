@@ -12,7 +12,7 @@ from .cache import Cache
 
 APEX_PATTERN = re.compile(config.APEX_RE)
 
-app = FastAPI(title="Subdomain Query", version="1.0.0")
+app = FastAPI(title="Panoptes", version="1.0.0")
 cache = Cache()
 
 

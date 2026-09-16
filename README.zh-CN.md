@@ -1,8 +1,8 @@
-# 子域名查询
+# Panoptes · 子域名全景查询
 
 [English](README.md) | 中文
 
-自托管的子域名查询服务，基于 Certificate Transparency（证书透明度）日志聚合 —— 参考 [crt.name](https://crt.name) 实现。
+**Panoptes**（Πανόπτης，「无所不见者」）—— 自托管的子域名全景查询服务，基于 Certificate Transparency（证书透明度）日志聚合 —— 参考 [crt.name](https://crt.name) 实现。
 
 > 🔍 查询任意 apex 域名的全部已知子域名。结果由多个公共 CT 数据源并发聚合，去重、规范化后缓存在 SQLite 中。
 

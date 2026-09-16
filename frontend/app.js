@@ -94,7 +94,7 @@ function exportAs(fmt) {
   const { apex, subdomains, dns, dnsChecked, http, httpChecked } = current;
   if (!subdomains.length) return;
   const stamp = new Date().toISOString().slice(0, 10);
-  const base = `subdomains_${apex}_${stamp}`;
+  const base = `panoptes_${apex}_${stamp}`;
   if (fmt === "txt") {
     download(subdomains.join("\n") + "\n", base + ".txt", "text/plain;charset=utf-8");
   } else if (fmt === "csv") {

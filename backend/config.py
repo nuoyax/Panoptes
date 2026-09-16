@@ -11,7 +11,7 @@ DB_PATH = DATA_DIR / "cache.db"
 
 # Upstream HTTP settings
 UPSTREAM_TIMEOUT = 120.0  # seconds per CT source (crt.sh can be slow)
-USER_AGENT = "Mozilla/5.0"
+USER_AGENT = "Panoptes/1.0 (+self-hosted subdomain query)"
 
 # crt.sh query tuning: excluding expired certs is 10-20x faster upstream
 CRTSH_EXCLUDE_EXPIRED = True

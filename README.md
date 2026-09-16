@@ -1,8 +1,8 @@
-# Subdomain Query
+# Panoptes
 
 [中文](README.zh-CN.md) | English
 
-A self-hosted subdomain lookup service powered by Certificate Transparency (CT) log aggregation — inspired by [crt.name](https://crt.name).
+**Panoptes** (Πανόπτης, "the all-seeing") — a self-hosted subdomain lookup service powered by Certificate Transparency (CT) log aggregation — inspired by [crt.name](https://crt.name).
 
 > 🔍 Query all known subdomains of any apex domain. Results are aggregated from multiple public CT sources concurrently, deduplicated, normalized, and cached in SQLite.
 
@@ -51,7 +51,7 @@ image.baidu.com
 
 ```
 ├── backend/
-│   ├── main.py            # FastAPI entrypoint, routes + static hosting
+│   ├── main.py            # FastAPI entrypoint (Panoptes), routes + static hosting
 │   ├── config.py          # Timeouts, cache TTL, tuning flags
 │   ├── aggregator.py      # Concurrent multi-source aggregation + dedup
 │   ├── cache.py           # aiosqlite cache (24h TTL)
