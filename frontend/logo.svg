@@ -4,57 +4,54 @@
       <stop offset="0" stop-color="#4f9cf9"/>
       <stop offset="1" stop-color="#2b5db8"/>
     </linearGradient>
-    <radialGradient id="iris" cx="0.35" cy="0.35" r="0.9">
-      <stop offset="0" stop-color="#bfe3ff"/>
-      <stop offset="1" stop-color="#3b7fd9"/>
-    </radialGradient>
   </defs>
 
-  <!-- rounded-square badge -->
+  <!-- badge -->
   <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#bg)"/>
 
-  <!-- Argus: a bearded giant head, many eyes across the face -->
+  <!--
+    Abstract Argus: the "all-seeing" reduced to geometry.
+    One triangle = the mythical watchman; each vertex holds an eye.
+    Edges = the gaze lines connecting his hundred eyes — nothing escapes
+    the network of sight. Reads as both a face (two eyes + brow) and a
+    constellation / network graph (subdomains discovered and linked).
+  -->
+
+  <!-- gaze lines between the eyes -->
+  <g stroke="#bcd9ff" stroke-width="1.6" opacity="0.55" stroke-linecap="round">
+    <line x1="20" y1="22" x2="44" y2="22"/>
+    <line x1="20" y1="22" x2="32" y2="42"/>
+    <line x1="44" y1="22" x2="32" y2="42"/>
+  </g>
+
+  <!-- triangle outline: the Panoptes figure -->
+  <path d="M32 12 L52 46 L12 46 Z" fill="none" stroke="#dbeaff"
+        stroke-width="2.6" stroke-linejoin="round" opacity="0.9"/>
+
+  <!-- vertex eyes -->
+  <!-- top vertex: the primary eye -->
   <g>
-    <!-- hair / wild curls -->
-    <path d="M14 30 Q12 12 26 9 Q32 7 38 9 Q52 12 50 30 Q52 24 48 18 Q46 24 42 17 Q40 23 36 15 Q33 21 32 14 Q30 21 28 15 Q24 23 22 17 Q18 24 16 18 Q12 24 14 30 Z"
-          fill="#0d1b33" opacity="0.85"/>
-    <!-- face -->
-    <path d="M15 28 Q15 20 22 18 Q32 15 42 18 Q49 20 49 28 Q49 38 44 46 Q38 54 32 54 Q26 54 20 46 Q15 38 15 28 Z"
-          fill="#e8d5b7"/>
-    <!-- beard -->
-    <path d="M19 42 Q22 56 32 58 Q42 56 45 42 Q40 50 32 50 Q24 50 19 42 Z"
-          fill="#0d1b33" opacity="0.9"/>
-
-    <!-- the many eyes (7 across the face) -->
-    <!-- brow eyes -->
-    <g>
-      <ellipse cx="20" cy="26" rx="4.4" ry="3.4" fill="#fff"/>
-      <circle cx="20" cy="26" r="2" fill="#1c2f55"/>
-      <circle cx="20.8" cy="25.2" r="0.7" fill="#fff"/>
-
-      <ellipse cx="32" cy="24" rx="4.8" ry="3.7" fill="#fff"/>
-      <circle cx="32" cy="24" r="2.2" fill="#1c2f55"/>
-      <circle cx="32.9" cy="23.1" r="0.8" fill="#fff"/>
-
-      <ellipse cx="44" cy="26" rx="4.4" ry="3.4" fill="#fff"/>
-      <circle cx="44" cy="26" r="2" fill="#1c2f55"/>
-      <circle cx="44.8" cy="25.2" r="0.7" fill="#fff"/>
-    </g>
-    <!-- cheek eyes -->
-    <g>
-      <ellipse cx="24" cy="35" rx="3.4" ry="2.7" fill="#fff"/>
-      <circle cx="24" cy="35" r="1.5" fill="#1c2f55"/>
-
-      <ellipse cx="40" cy="35" rx="3.4" ry="2.7" fill="#fff"/>
-      <circle cx="40" cy="35" r="1.5" fill="#1c2f55"/>
-    </g>
-    <!-- lower eyes near the beard -->
-    <g>
-      <ellipse cx="28" cy="43" rx="2.4" ry="2" fill="#fff"/>
-      <circle cx="28" cy="43" r="1" fill="#1c2f55"/>
-
-      <ellipse cx="36" cy="43" rx="2.4" ry="2" fill="#fff"/>
-      <circle cx="36" cy="43" r="1" fill="#1c2f55"/>
-    </g>
+    <circle cx="32" cy="12" r="6.5" fill="#0a1440"/>
+    <circle cx="32" cy="12" r="4.2" fill="#eaf4ff"/>
+    <circle cx="32" cy="12" r="2" fill="#0a1440"/>
+    <circle cx="33" cy="11" r="0.8" fill="#fff"/>
+  </g>
+  <!-- left vertex eye -->
+  <g>
+    <circle cx="12" cy="46" r="5" fill="#0a1440"/>
+    <circle cx="12" cy="46" r="3" fill="#eaf4ff"/>
+    <circle cx="12" cy="46" r="1.4" fill="#0a1440"/>
+  </g>
+  <!-- right vertex eye -->
+  <g>
+    <circle cx="52" cy="46" r="5" fill="#0a1440"/>
+    <circle cx="52" cy="46" r="3" fill="#eaf4ff"/>
+    <circle cx="52" cy="46" r="1.4" fill="#0a1440"/>
+  </g>
+  <!-- centroid eye: the ever-open inner gaze -->
+  <g>
+    <circle cx="32" cy="35" r="4" fill="#0a1440"/>
+    <circle cx="32" cy="35" r="2.4" fill="#8fd0ff"/>
+    <circle cx="32" cy="35" r="1.1" fill="#0a1440"/>
   </g>
 </svg>
