@@ -11,8 +11,9 @@
     </linearGradient>
   </defs>
 
-  <!-- terracotta background -->
-  <rect x="2" y="2" width="60" height="60" rx="10" fill="url(#clay)"/>
+  <!-- terracotta background, round amphora-medallion shape -->
+  <circle cx="32" cy="32" r="30" fill="url(#clay)"/>
+  <circle cx="32" cy="32" r="29.2" fill="none" stroke="#241105" stroke-width="1.4" opacity="0.5"/>
 
   <!-- meander (Greek key) border, top and bottom -->
   <g fill="none" stroke="#2b1608" stroke-width="1.6">
