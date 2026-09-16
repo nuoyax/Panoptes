@@ -7,10 +7,10 @@ import httpx
 
 from . import config
 from .sources.base import CTSource
-from .sources.certspotter import CertSpotterSource
 from .sources.crtsh import CrtShSource
+from .sources.otx import OtxSource
 
-SOURCES: list[CTSource] = [CrtShSource(), CertSpotterSource()]
+SOURCES: list[CTSource] = [CrtShSource(), OtxSource()]
 
 _NAME_RE = re.compile(
     r"^(?=.{1,253}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$"
