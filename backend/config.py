@@ -43,6 +43,7 @@ ENRICHMENT_RETENTION_DAYS = 30
 
 # Limits
 MAX_RESULTS = 100_000
+MAX_HTTP_HOSTS = 3000  # hosts fed to http_probe (8s timeout at concurrency 100)
 MAX_SCAN_HOSTS = 1000  # hosts fed to port_scan / recon (38 ports x N hosts is not cheap)
 MAX_DNS_HOSTS = 20_000  # hosts fed to dns_verify
 
