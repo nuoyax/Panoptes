@@ -18,9 +18,11 @@ async def _resolve_one(sem: asyncio.Semaphore, subdomain: str) -> tuple[str, lis
             return subdomain, None
 
 
-async def verify(subdomains: list[str]) -> dict[str, list[str] | None]:
+async def verify(
+    subdomains: list[str], concurrency: int = CONCURRENCY
+) -> dict[str, list[str] | None]:
     """Resolve A records concurrently. Result: {sub: ips or None}."""
-    sem = asyncio.Semaphore(CONCURRENCY)
+    sem = asyncio.Semaphore(concurrency)
     pairs = await asyncio.gather(*(_resolve_one(sem, s) for s in subdomains))
     return dict(pairs)
 

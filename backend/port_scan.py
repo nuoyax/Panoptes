@@ -58,11 +58,13 @@ CONCURRENCY = 500   # parallel connection attempts
 TIMEOUT = 1.5       # seconds per connect
 
 
-async def _check_port(ip: str, port: int, sem: asyncio.Semaphore) -> int | None:
+async def _check_port(
+    ip: str, port: int, sem: asyncio.Semaphore, timeout: float
+) -> int | None:
     async with sem:
         try:
             _, writer = await asyncio.wait_for(
-                asyncio.open_connection(ip, port), timeout=TIMEOUT
+                asyncio.open_connection(ip, port), timeout=timeout
             )
             writer.close()
             try:
@@ -79,11 +81,12 @@ async def _scan_host(
     ports: list[tuple[int, str]],
     host: str,
     ips: list[str],
+    timeout: float,
 ):
     """Scan a host on all its resolved IPs; return (host, {port: {ip, service}})."""
     port_nums = [p for p, _ in ports]
     service_of = dict(ports)
-    tasks = [_check_port(ip, p, sem) for ip in ips for p in port_nums]
+    tasks = [_check_port(ip, p, sem, timeout) for ip in ips for p in port_nums]
     results = await asyncio.gather(*tasks)
     open_ports: dict[int, dict] = {}
     idx = 0
@@ -95,16 +98,21 @@ async def _scan_host(
     return host, dict(sorted(open_ports.items()))
 
 
-async def scan(alive: dict[str, list[str]], ports=None) -> dict:
+async def scan(
+    alive: dict[str, list[str]],
+    ports=None,
+    concurrency: int = CONCURRENCY,
+    timeout: float = TIMEOUT,
+) -> dict:
     """Scan TCP ports of alive hosts.
 
     alive: {subdomain: [ips]} from dns_verify.
     Returns {ports, results: {sub: {port: {ip, service}}}, ...}.
     """
     ports = ports or DEFAULT_PORTS
-    sem = asyncio.Semaphore(CONCURRENCY)
+    sem = asyncio.Semaphore(concurrency)
     pairs = await asyncio.gather(
-        *(_scan_host(sem, ports, host, ips) for host, ips in alive.items())
+        *(_scan_host(sem, ports, host, ips, timeout) for host, ips in alive.items())
     )
     results = {h: p for h, p in pairs if p}
     return {

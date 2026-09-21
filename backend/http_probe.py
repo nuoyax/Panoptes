@@ -30,12 +30,23 @@ async def _probe_one(sem: asyncio.Semaphore, client: httpx.AsyncClient, subdomai
     return subdomain, None
 
 
-async def probe(subdomains: list[str]) -> dict[str, dict]:
-    """Probe alive subdomains concurrently. Result: {sub: info or None}."""
+async def probe(
+    subdomains: list[str],
+    timeout: float = config.HTTP_PROBE_TIMEOUT,
+    verify: bool | None = None,
+) -> dict[str, dict]:
+    """Probe alive subdomains concurrently. Result: {sub: info or None}.
+
+    TLS verification defaults to config.HTTP_VERIFY_TLS: discovered hosts
+    frequently serve mismatched or self-signed certs, and we only want the
+    status line and title.
+    """
     sem = asyncio.Semaphore(CONCURRENCY)
     headers = {"User-Agent": config.USER_AGENT}
+    if verify is None:
+        verify = config.HTTP_VERIFY_TLS
     async with httpx.AsyncClient(
-        headers=headers, timeout=8.0, verify=False,
+        headers=headers, timeout=timeout, verify=verify,
         follow_redirects=True,
     ) as client:
         pairs = await asyncio.gather(*(_probe_one(sem, client, s) for s in subdomains))

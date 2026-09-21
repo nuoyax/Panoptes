@@ -76,14 +76,19 @@ def check_headers(resp: httpx.Response) -> dict:
     return {"missing": missing, "present": present}
 
 
-async def check_tls(host: str) -> dict | None:
-    """Fetch certificate info: issuer, expiry, SANs, days remaining."""
+async def check_tls(host: str, timeout: float = PROBE_TIMEOUT) -> dict | None:
+    """Fetch certificate info: issuer, expiry, SANs, days remaining.
+
+    Parsing uses the `openssl` CLI when available; without it the cert is
+    fetched but issuer/SAN/validity cannot be extracted, so the safer answer is
+    a cert with null fields rather than a crash.
+    """
     ctx = ssl.create_default_context()
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE  # we want the cert regardless of validity
     try:
         reader, writer = await asyncio.wait_for(
-            asyncio.open_connection(host, 443, ssl=ctx), timeout=PROBE_TIMEOUT
+            asyncio.open_connection(host, 443, ssl=ctx), timeout=timeout
         )
         der = writer.get_extra_info("ssl_object").getpeercert(True)
         writer.close()
@@ -91,13 +96,11 @@ async def check_tls(host: str) -> dict | None:
             await writer.wait_closed()
         except Exception:
             pass
-        import subprocess, json, os, tempfile
-        # Use Python's ssl to parse via _ssl-level DER -> use openssl if available;
-        # fallback: minimal parse of notAfter via ssl module is not available for DER,
-        # so convert with ssl.DER_cert_to_PEM_cert and parse with a lightweight regex.
         pem = ssl.DER_cert_to_PEM_cert(der)
-        # Parse SANs and validity from PEM via openssl CLI if present; else regex fallback
-        san, issuer, not_after = [], "", None
+        # Derive issuer / validity / SANs from the PEM
+        san: list[str] = []
+        issuer = ""
+        not_after: datetime.datetime | None = None
         try:
             proc = await asyncio.create_subprocess_exec(
                 "openssl", "x509", "-noout", "-issuer", "-dates", "-ext", "subjectAltName",
@@ -107,7 +110,8 @@ async def check_tls(host: str) -> dict | None:
             out, _ = await proc.communicate(pem.encode(), timeout=10)
             text = out.decode(errors="replace")
             m = re.search(r"issuer=?(.+)", text)
-            if m: issuer = m.group(1).strip()
+            if m:
+                issuer = m.group(1).strip()
             m = re.search(r"notAfter=(.+)", text)
             if m:
                 not_after_str = m.group(1).strip()
@@ -117,11 +121,14 @@ async def check_tls(host: str) -> dict | None:
                         break
                     except ValueError:
                         continue
-            sans = re.findall(r"DNS:([^,\s]+)", text)
-            san = sans
-        except (FileNotFoundError, asyncio.TimeoutError):
+            san = re.findall(r"DNS:([^,\s]+)", text)
+        except (FileNotFoundError, asyncio.TimeoutError, OSError):
             pass
-        days_left = (not_after - datetime.datetime.utcnow()).days if not_after else None
+        days_left = (
+            (not_after - datetime.datetime.now(datetime.UTC).replace(tzinfo=None)).days
+            if not_after
+            else None
+        )
         return {
             "issuer": issuer,
             "not_after": not_after.isoformat() if not_after else None,
@@ -133,16 +140,23 @@ async def check_tls(host: str) -> dict | None:
         return None
 
 
-async def recon(http_results: dict[str, dict]) -> dict:
+async def recon(
+    http_results: dict[str, dict],
+    concurrency: int = CONCURRENCY,
+    timeout: float = PROBE_TIMEOUT,
+    verify: bool | None = None,
+) -> dict:
     """Run all baseline checks against hosts that answered HTTP.
 
     http_results: {sub: {url, status, title}} from http_probe.
     """
-    sem = asyncio.Semaphore(CONCURRENCY)
+    sem = asyncio.Semaphore(concurrency)
     headers = {"User-Agent": config.USER_AGENT}
+    if verify is None:
+        verify = config.HTTP_VERIFY_TLS
 
     async with httpx.AsyncClient(
-        headers=headers, timeout=PROBE_TIMEOUT, verify=False, follow_redirects=True
+        headers=headers, timeout=timeout, verify=verify, follow_redirects=True
     ) as client:
         async def full_check(sub, info):
             base = info["url"].rstrip("/")
@@ -152,7 +166,7 @@ async def recon(http_results: dict[str, dict]) -> dict:
                 headers_info = check_headers(resp)
             except Exception:
                 headers_info = None
-            tls_task = check_tls(sub)
+            tls_task = check_tls(sub, timeout)
             paths, tls = await asyncio.gather(paths_task, tls_task)
             return sub, {"paths": paths, "headers": headers_info, "tls": tls}
 
