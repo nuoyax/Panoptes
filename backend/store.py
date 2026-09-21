@@ -90,23 +90,27 @@ def status_of(stage: str, value: dict | None) -> str:
     return "flagged"
 
 
-def flatten(stage: str, results: dict[str, Any]) -> dict[str, dict | None]:
-    """Convert a stage's response payload into {name: data | None} rows."""
-    if stage == "dns":
-        alive = results.get("alive") or {}
-        return {name: {"ips": ips} for name, ips in alive.items()}
-    return dict(results or {})
+def flatten(stage: str, payload: dict[str, Any]) -> dict[str, dict | None]:
+    """Convert a stage's raw result into {name: data | None} rows.
 
-
-def unflatten(stage: str, rows: dict[str, dict | None]) -> dict[str, dict | None]:
-    """Convert stored rows back into the {name: data | None} payload shape.
-
-    A port payload is keyed by port number inside each host entry; JSON
-    stringifies those keys, so they are cast back to int for in-process parity
-    with a live scan (the wire format stringifies them again either way).
+    `dns` takes the {host: [ips] | None} map from dns_verify.verify — polarity is
+    preserved so a host that does not resolve is stored as a cached negative
+    instead of being re-resolved on every scan.
     """
+    if stage == "dns":
+        return {name: ({"ips": ips} if ips else None) for name, ips in payload.items()}
+    return dict(payload or {})
+
+
+def unflatten(stage: str, rows: dict[str, dict | None]) -> dict[str, Any]:
+    """Convert stored rows back into a stage's raw result shape."""
+    if stage == "dns":
+        return {name: ((value or {}).get("ips") or None) for name, value in rows.items()}
     if stage != "ports":
         return dict(rows)
+    # A port payload is keyed by port number inside each host entry; JSON
+    # stringifies those keys, so they are cast back to int for in-process parity
+    # with a live scan (the wire format stringifies them again either way).
     out: dict[str, dict | None] = {}
     for name, ports in rows.items():
         if ports is None:
