@@ -54,6 +54,24 @@
     }
     #meta { color: var(--muted); font-size: .84rem; margin-right: auto; }
     #meta .alive { color: var(--accent2); }
+    #stages { display: flex; width: 100%; max-width: 1100px; gap: 6px; flex-wrap: wrap; }
+    #stages:empty { display: none; }
+    .pill {
+      font-size: .74rem; padding: 4px 11px; border-radius: 20px; white-space: nowrap;
+      border: 1px solid var(--border); background: #0e1420; color: var(--muted);
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .pill.pending { border-style: dashed; }
+    .pill.running {
+      color: var(--accent); border-color: rgba(79,156,249,.4); background: rgba(79,156,249,.08);
+    }
+    .pill.done {
+      color: var(--accent2); border-color: rgba(126,224,184,.35); background: rgba(126,224,184,.08);
+    }
+    .pill.error, .pill.cancelled {
+      color: #f87171; border-color: rgba(248,113,113,.35); background: rgba(248,113,113,.08);
+    }
+    .pill time { color: var(--muted); font-family: ui-monospace, Consolas, monospace; }
     .chip {
       background: var(--panel); border: 1px solid var(--border); color: var(--text);
       border-radius: 8px; padding: 6px 14px; font-size: .82rem; cursor: pointer;
@@ -136,6 +154,7 @@
     <button id="btn" class="primary" type="submit">查询</button>
   </form>
 
+  <div id="stages"></div>
   <div id="toolbar">
     <span id="meta"></span>
     <input id="filter" class="filter" type="text" placeholder="过滤结果…">
