@@ -1,20 +1,24 @@
 """Concurrent multi-source aggregation with dedup and apex filtering."""
 
 import asyncio
-import re
 
 import httpx
 
 from . import config
 from .sources.base import CTSource
+from .sources.certspotter import CertSpotterSource
 from .sources.crtsh import CrtShSource
+from .sources.hackertarget import HackerTargetSource
 from .sources.otx import OtxSource
+from .sources.wayback import WaybackSource
 
-SOURCES: list[CTSource] = [CrtShSource(), OtxSource()]
-
-_NAME_RE = re.compile(
-    r"^(?=.{1,253}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$"
-)
+SOURCES: list[CTSource] = [
+    CrtShSource(),
+    OtxSource(),
+    HackerTargetSource(),
+    WaybackSource(),
+    CertSpotterSource(),
+]
 
 
 async def _fetch_one(source: CTSource, client: httpx.AsyncClient, apex: str):
@@ -32,7 +36,7 @@ def _normalize(raw_names: list[str], apex: str) -> set[str]:
         name = name.strip().lower().lstrip("*.").rstrip(".")
         if not name or not name.endswith(suffix) or name == apex:
             continue
-        if not _NAME_RE.match(name):
+        if not config.APEX_PATTERN.fullmatch(name):
             continue
         out.add(name)
     return out
