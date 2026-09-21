@@ -210,7 +210,7 @@ async def scan(body: ScanRequest):
             status_code=400,
             content={
                 "error": f"unknown stage: {exc.args[0]!r}",
-                "valid": list(jobs.STAGES) + sorted(jobs.STAGE_ALIASES),
+                "valid": sorted(set(jobs.STAGES) | set(jobs.STAGE_ALIASES)),
             },
         )
     if not resolved:
