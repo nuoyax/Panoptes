@@ -22,7 +22,7 @@
 ## Quick Start
 
 ```bash
-git clone <repo-url> && cd query-sub-domin
+git clone https://github.com/nuoyax/Panoptes.git && cd Panoptes
 pip install -r backend/requirements.txt
 python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
 ```
